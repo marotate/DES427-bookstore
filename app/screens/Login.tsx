@@ -40,8 +40,8 @@ const Login = () => {
   }
   return (
     <View style={styles.container}>
-      <TextInput value = {email} style={styles.input} placeholder="Email" autoCapitalize="none" onChangeText={(text) => setEmail(text)}>Login</TextInput>
-      <TextInput secureTextEntry={true} value = {password} style={styles.input} placeholder="Password" autoCapitalize="none" onChangeText={(text) => setPassword(text)}>Login</TextInput>
+      <TextInput value = {email} style={styles.input} placeholder="Email" autoCapitalize="none" onChangeText={(text) => setEmail(text)}></TextInput>
+      <TextInput secureTextEntry={true} value = {password} style={styles.input} placeholder="Password" autoCapitalize="none" onChangeText={(text) => setPassword(text)}></TextInput>
 
       { loading ? <ActivityIndicator size="large" color="#0000ff"/> 
       : <>
