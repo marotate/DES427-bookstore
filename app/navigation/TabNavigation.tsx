@@ -1,12 +1,16 @@
+// TabNavigation.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from '../screens/Home';
 import Account from '../screens/Account';
 import Cart from '../screens/Cart'; 
 import Categories from '../screens/Categories'; 
+import BookList from '../screens/BookList'; // Import the BookListScreen
 import { Entypo } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Book } from '../../type';
 
 const Tab = createBottomTabNavigator();
 
