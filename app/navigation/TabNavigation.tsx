@@ -10,7 +10,7 @@ import BookList from '../screens/BookList'; // Import the BookListScreen
 import { Entypo } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Book } from '../../type';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -77,6 +77,8 @@ const TabNavigation = () => {
         </Tab.Navigator>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     icon: {

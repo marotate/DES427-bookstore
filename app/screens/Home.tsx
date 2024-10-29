@@ -1,22 +1,22 @@
-// Home.tsx
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
-  Animated,
-  TextInput,
-  TouchableOpacity,
   FlatList,
   Image,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { ref, onValue } from "firebase/database";
 import { FIREBASE_DB, FIREBASE_STORAGE } from "../../Firebaseconfig";
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import BooksList from "./BookList"; // Import the new BooksList component
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../type";
+import BookDetails from "./BookDetails";
 
 const { width, height } = Dimensions.get("window");
 
@@ -33,14 +33,15 @@ interface Book {
   picture: string;
 }
 
+
 const Home = () => {
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [topBooks, setTopBooks] = useState<Book[]>([]);
   const [latestBooks, setLatestBooks] = useState<Book[]>([]);
   const [upcomingBooks, setUpcomingBooks] = useState<Book[]>([]);
-  const [showMoreType, setShowMoreType] = useState<null | 'Top Books' | 'Latest Books' | 'Upcoming Books'>(null);
+  const [showMoreType, setShowMoreType] = useState<null | "Top Books" | "Latest Books" | "Upcoming Books">(null);
   const [booksToShow, setBooksToShow] = useState<Book[]>([]); // State to hold books to show in BooksList
-  const searchBarAnimation = useRef(new Animated.Value(0)).current;
+  const [currentScreen, setCurrentScreen] = useState<'Home' | 'BookDetails'>('Home'); // State to manage current screen
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null); // State to hold selected book
 
   useEffect(() => {
     const booksRef = ref(FIREBASE_DB, "books");
@@ -62,30 +63,16 @@ const Home = () => {
     });
   }, []);
 
-  const toggleSearchBar = () => {
-    setIsSearchVisible(!isSearchVisible);
-    Animated.timing(searchBarAnimation, {
-      toValue: isSearchVisible ? 0 : 1,
-      duration: 100,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const searchBarWidth = searchBarAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, width * 0.9],
-  });
-
-  const handleSeeMore = (type: 'Top Books' | 'Latest Books' | 'Upcoming Books') => {
+  const handleSeeMore = (type: "Top Books" | "Latest Books" | "Upcoming Books") => {
     setShowMoreType(type);
     switch (type) {
-      case 'Top Books':
+      case "Top Books":
         setBooksToShow(topBooks);
         break;
-      case 'Latest Books':
+      case "Latest Books":
         setBooksToShow(latestBooks);
         break;
-      case 'Upcoming Books':
+      case "Upcoming Books":
         setBooksToShow(upcomingBooks);
         break;
       default:
@@ -103,8 +90,14 @@ const Home = () => {
     );
   }
 
+  const handleBookDetail = (book: Book) => {
+    setSelectedBook(book);
+    setCurrentScreen('BookDetails');
+  };
+  
+
   const renderItem = ({ item }: { item: Book }) => (
-    <View style={styles.bookItem}>
+    <TouchableOpacity style={styles.bookItem} onPress={() => handleBookDetail(item)}>
       <Image
         source={{ uri: item.picture }}
         style={styles.bookImage}
@@ -116,42 +109,27 @@ const Home = () => {
         <Text style={styles.bookAuthor}>{item.author}</Text>
         <Text style={styles.bookPrice}>{item.price} ฿</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
+
+  if (currentScreen === 'BookDetails' && selectedBook) {
+    return <BookDetails book={selectedBook} onGoBack={() => setCurrentScreen('Home')} />;
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.header}>
-        {!isSearchVisible ? (
-          <>
-            <Text style={styles.title}>WELCOME TO BOOKSHELF STORE</Text>
-            <TouchableOpacity onPress={toggleSearchBar}>
-              <Ionicons name="search" size={30} color="#0B0F4C" style={styles.icon} />
-            </TouchableOpacity>
-          </>
-        ) : (
-          <Animated.View style={[styles.searchBar, { width: searchBarWidth }]}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search title/publisher/author/ISBN"
-              placeholderTextColor="#999"
-              onBlur={toggleSearchBar}
-            />
-            <TouchableOpacity onPress={toggleSearchBar} style={styles.closeIcon}>
-              <Ionicons name="close" size={24} color="#0B0F4C" />
-            </TouchableOpacity>
-          </Animated.View>
-        )}
+        <Text style={styles.title}>WELCOME TO BOOKSHELF STORE</Text>
       </View>
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Top Books</Text>
-        <TouchableOpacity onPress={() => handleSeeMore('Top Books')}>
+        <TouchableOpacity onPress={() => handleSeeMore("Top Books")}>
           <Text style={styles.seeMore}>See More</Text>
         </TouchableOpacity>
       </View>
       <FlatList
-        data={topBooks.slice(0, 4)}
+        data={topBooks.slice(0, 5)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         horizontal
@@ -160,12 +138,12 @@ const Home = () => {
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Latest Books</Text>
-        <TouchableOpacity onPress={() => handleSeeMore('Latest Books')}>
-          <Text style={styles.seeMore}>See More</Text>
+        <TouchableOpacity onPress={() => handleSeeMore("Latest Books")}>
+          <Text style={styles.seeMore}>Show More</Text>
         </TouchableOpacity>
       </View>
       <FlatList
-        data={latestBooks.slice(0, 4)}
+        data={latestBooks.slice(0, 5)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         horizontal
@@ -174,12 +152,12 @@ const Home = () => {
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Upcoming Books</Text>
-        <TouchableOpacity onPress={() => handleSeeMore('Upcoming Books')}>
-          <Text style={styles.seeMore}>See More</Text>
+        <TouchableOpacity onPress={() => handleSeeMore("Upcoming Books")}>
+          <Text style={styles.seeMore}>Show More</Text>
         </TouchableOpacity>
       </View>
       <FlatList
-        data={upcomingBooks.slice(0, 4)}
+        data={upcomingBooks.slice(0, 5)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         horizontal
@@ -196,7 +174,7 @@ const styles = StyleSheet.create({
     padding: width * 0.05,
   },
   scrollContent: {
-    paddingBottom: 20, 
+    paddingBottom: 20,
   },
   header: {
     flexDirection: "row",
@@ -212,23 +190,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 5,
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    height: 50,
-  },
-  searchInput: {
-    flex: 1,
-    height: "100%",
-    fontSize: 16,
-    color: "#0B0F4C",
-  },
-  closeIcon: {
-    paddingLeft: 10,
   },
   sectionTitle: {
     fontSize: 20,
@@ -258,7 +219,7 @@ const styles = StyleSheet.create({
     height: height * 0.24,
     resizeMode: "contain",
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     justifyContent: "center",
     padding: 5,
   },
@@ -280,6 +241,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     fontSize: 20,
     color: "#fff",
+    fontWeight: "bold",
   },
   seeMore: {
     color: "#0B0F4C",
@@ -298,7 +260,7 @@ const styles = StyleSheet.create({
     height: height * 0.5,
     paddingTop: 15,
     padding: 10,
-    backgroundColor: "#0B0F4C", 
+    backgroundColor: "#0B0F4C",
   },
   sectionHeader: {
     flexDirection: "row",

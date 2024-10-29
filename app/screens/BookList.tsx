@@ -1,4 +1,3 @@
-// BooksList.tsx
 import React from "react";
 import {
   View,
@@ -7,9 +6,11 @@ import {
   StyleSheet,
   Dimensions,
   Image,
+  TouchableOpacity,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 interface Book {
   id: string;
@@ -41,18 +42,19 @@ const BooksList: React.FC<BooksListProps> = ({ books, category, onGoBack }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{category}</Text>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={onGoBack} style={styles.backIconContainer}>
+          <Ionicons name="arrow-back" size={24} color="#0B0F4C" />
+        </TouchableOpacity>
+        <Text style={styles.header}>{category}</Text>
+      </View>
       <FlatList
         data={books}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.bookListColumn}
         contentContainerStyle={styles.fullBookList}
+        showsVerticalScrollIndicator={false} // Optional: Hide the scroll indicator
       />
-      <Text onPress={onGoBack} style={styles.goBack}>
-        Go Back
-      </Text>
     </View>
   );
 };
@@ -60,64 +62,83 @@ const BooksList: React.FC<BooksListProps> = ({ books, category, onGoBack }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#f8f9fa",
     padding: 20,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingTop: 30,
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
     color: "#0B0F4C",
+    flex: 1,
+    textAlign: "left",
+  },
+  backIconContainer: {
+    padding: 10,
+    paddingRight: 20,
   },
   bookItem: {
-    width: width * 0.5,
-    margin: 5,
-    backgroundColor: "#d0d4fa",
+    flexDirection: "row",
+    width: "100%",
+    height: 140,
+    marginVertical: 16,
+    backgroundColor: "#D1D4F9",
     borderRadius: 10,
     overflow: "hidden",
+    padding: 10,
+    paddingRight: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   bookImage: {
-    width: "100%",
-    height: height * 0.24,
+    width: 100,
+    height: 120,
     resizeMode: "contain",
+    marginRight: 10,
+    marginTop: 10,
+    padding: 10,
+    justifyContent: "center",
   },
   bookDetails: {
-    padding: 10,
+    width: width,
+    flex: 1,
+    justifyContent: "center",
     backgroundColor: "#0B0F4C",
+    padding: 10,
   },
   bookCategory: {
-    fontSize: 10,
+    fontSize: 12,
     color: "#fff",
+    marginBottom: 4,
   },
   bookTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#fff",
+    marginBottom: 4,
   },
   bookAuthor: {
-    fontSize: 11,
+    fontSize: 14,
     color: "#fff",
+    marginBottom: 4,
   },
   bookPrice: {
-    fontSize: 20,
-    color: "#fff",
-  },
-  goBack: {
-    marginTop: 20,
-    color: "#0B0F4C",
+    fontSize: 18,
+    color: "#D1D4F9",
     fontWeight: "bold",
-    textAlign: "center",
-  },
-  bookList: {
-    paddingVertical: 10,
   },
   fullBookList: {
     paddingHorizontal: 10,
-  },
-  bookListColumn: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
   },
 });
 
