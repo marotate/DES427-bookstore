@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../type";
 import BookDetails from "./BookDetails";
+import FastImage from "react-native-fast-image";
 
 const { width, height } = Dimensions.get("window");
 
@@ -33,14 +34,17 @@ interface Book {
   picture: string;
 }
 
-
 const Home = () => {
   const [topBooks, setTopBooks] = useState<Book[]>([]);
   const [latestBooks, setLatestBooks] = useState<Book[]>([]);
   const [upcomingBooks, setUpcomingBooks] = useState<Book[]>([]);
-  const [showMoreType, setShowMoreType] = useState<null | "Top Books" | "Latest Books" | "Upcoming Books">(null);
+  const [showMoreType, setShowMoreType] = useState<
+    null | "Top Books" | "Latest Books" | "Upcoming Books"
+  >(null);
   const [booksToShow, setBooksToShow] = useState<Book[]>([]); // State to hold books to show in BooksList
-  const [currentScreen, setCurrentScreen] = useState<'Home' | 'BookDetails'>('Home'); // State to manage current screen
+  const [currentScreen, setCurrentScreen] = useState<"Home" | "BookDetails">(
+    "Home"
+  ); // State to manage current screen
   const [selectedBook, setSelectedBook] = useState<Book | null>(null); // State to hold selected book
 
   useEffect(() => {
@@ -63,7 +67,9 @@ const Home = () => {
     });
   }, []);
 
-  const handleSeeMore = (type: "Top Books" | "Latest Books" | "Upcoming Books") => {
+  const handleSeeMore = (
+    type: "Top Books" | "Latest Books" | "Upcoming Books"
+  ) => {
     setShowMoreType(type);
     switch (type) {
       case "Top Books":
@@ -92,16 +98,17 @@ const Home = () => {
 
   const handleBookDetail = (book: Book) => {
     setSelectedBook(book);
-    setCurrentScreen('BookDetails');
+    setCurrentScreen("BookDetails");
   };
-  
 
   const renderItem = ({ item }: { item: Book }) => (
-    <TouchableOpacity style={styles.bookItem} onPress={() => handleBookDetail(item)}>
+    <TouchableOpacity
+      style={styles.bookItem}
+      onPress={() => handleBookDetail(item)}
+    >
       <Image
         source={{ uri: item.picture }}
         style={styles.bookImage}
-        onError={(error) => console.log("Image Load Error:", error.nativeEvent.error)}
       />
       <View style={styles.bookDetails}>
         <Text style={styles.bookCategory}>{item.category}</Text>
@@ -112,12 +119,20 @@ const Home = () => {
     </TouchableOpacity>
   );
 
-  if (currentScreen === 'BookDetails' && selectedBook) {
-    return <BookDetails book={selectedBook} onGoBack={() => setCurrentScreen('Home')} />;
+  if (currentScreen === "BookDetails" && selectedBook) {
+    return (
+      <BookDetails
+        book={selectedBook}
+        onGoBack={() => setCurrentScreen("Home")}
+      />
+    );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+    >
       <View style={styles.header}>
         <Text style={styles.title}>WELCOME TO BOOKSHELF STORE</Text>
       </View>
@@ -134,6 +149,7 @@ const Home = () => {
         keyExtractor={(item) => item.id}
         horizontal
         contentContainerStyle={styles.bookList}
+        windowSize={2}
       />
 
       <View style={styles.sectionHeader}>
