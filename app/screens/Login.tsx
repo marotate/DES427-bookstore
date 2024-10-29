@@ -5,7 +5,9 @@ import {
   TextInput,
   ActivityIndicator,
   TouchableOpacity,
+  Image,
   KeyboardAvoidingView,
+  ImageBackground,
 } from "react-native";
 import React, { useState } from "react";
 import { FIREBASE_AUTH } from "../../Firebaseconfig";
@@ -44,6 +46,11 @@ const Login = () => {
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView behavior="padding">
+        <Image
+          source={{ uri: "https://firebasestorage.googleapis.com/v0/b/bookstore-2abd0.appspot.com/o/MENU%20(2)_0.png?alt=media&token=60a18526-4926-494a-ad01-5179090988c7" }}
+          style={styles.image} 
+        />
+        <Text style={styles.title}>Please fill your details to signup</Text>
         <TextInput
           value={email}
           style={styles.input}
@@ -69,7 +76,7 @@ const Login = () => {
             </TouchableOpacity>
             <TouchableOpacity 
               onPress={() => {
-                console.log('Navigating to Signup'); // Log when navigating
+                console.log('Navigating to Signup');
                 navigation.navigate('Signup');
               }} 
               style={styles.signupButton}
@@ -90,6 +97,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     flex: 1,
     justifyContent: "center",
+  },
+  image: {
+    width: 150,    
+    height: 150,   
+    alignSelf: 'center', 
+    marginBottom: 20,    
+  },
+  title: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   input: {
     marginVertical: 4,

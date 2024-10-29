@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { FIREBASE_AUTH } from '../../Firebaseconfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -33,7 +33,13 @@ const Signup = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create an Account</Text>
+      <Image
+        source={{
+          uri: "https://firebasestorage.googleapis.com/v0/b/bookstore-2abd0.appspot.com/o/MENU%20(2)_0.png?alt=media&token=60a18526-4926-494a-ad01-5179090988c7",
+        }}
+        style={styles.image} 
+      />
+      <Text style={styles.title}>Please fill your details to signup</Text>
       <TextInput
         placeholder="Username"
         value={username}
@@ -65,6 +71,15 @@ const Signup = () => {
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
+      <TouchableOpacity 
+              onPress={() => {
+                console.log('Navigating to Login');
+                navigation.navigate('Login');
+              }} 
+              style={styles.gobackButton}
+            >
+              <Text style={styles.gobackText}>Go Back</Text>
+            </TouchableOpacity>
     </View>
   );
 };
@@ -77,22 +92,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
+  image: {
+    width: 150,    // Set width of the image
+    height: 150,   // Set height of the image
+    alignSelf: 'center', // Center the image horizontally
+    marginBottom: 20,    // Add space below the image
+  },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 18,
     textAlign: 'center',
     marginBottom: 20,
   },
   input: {
+    marginVertical: 4,
     height: 50,
-    borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    borderRadius: 4,
+    padding: 10,
+    backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: '#121764', // Change to your preferred color
+    backgroundColor: '#121764',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
@@ -102,5 +122,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  gobackButton: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  gobackText: {
+    color: '#007bff',
+    fontSize: 16,
   },
 });
