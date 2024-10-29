@@ -5,7 +5,16 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from './Firebaseconfig';
 import Login from './app/screens/Login';
 import TabNavigation from './app/navigation/TabNavigation'; // Import TabNavigation
+import Signup from './app/screens/SignUp'; 
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 
+
+export type RootStackParamList = {
+  Login: undefined;
+  Signup: undefined;
+  Tabs: undefined;
+};
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -25,21 +34,27 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         {user ? (
-          // If user is authenticated, navigate to TabNavigation which contains the Home screen
           <Stack.Screen
             name="Tabs"
             component={TabNavigation}
-            options={{ headerShown: false }} // Hide the header for TabNavigation
+            options={{ headerShown: false }}
           />
         ) : (
-          // If user is not authenticated, navigate to the Login screen
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }} // Hide the header for the Login screen
-          />
+          <>
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Signup"
+              component={Signup}
+              options={{ headerShown: false }}
+            />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
   );
+  
 }
