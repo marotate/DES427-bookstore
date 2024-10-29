@@ -209,11 +209,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   categoryCard: {
+    width: width*0.6,
     height: height * 0.15,
     borderRadius: 5,
     marginBottom: 10,
     flex: 1,
-    marginHorizontal: 10,
+    marginHorizontal: 6,
     marginVertical: 10,
     overflow: 'hidden',
   },
