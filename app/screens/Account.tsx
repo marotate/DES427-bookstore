@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import { FIREBASE_AUTH } from "../../Firebaseconfig";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../../Firebaseconfig";
 import { updateProfile, updateEmail, User } from "firebase/auth"; // Import update functions directly
+import { ref, update } from "firebase/database";
 
 interface RouterProps {
     navigation: NavigationProp<any, any>;
@@ -12,6 +13,7 @@ const Account = ({ navigation }: RouterProps) => {
     const user = FIREBASE_AUTH.currentUser as User | null;
     const [username, setUsername] = useState(user?.displayName || "");
     const [email, setEmail] = useState(user?.email || "");
+    const [address, setAddress] = useState("");
     const [isEditing, setIsEditing] = useState(false);
 
     const handleSave = async () => {
@@ -20,6 +22,10 @@ const Account = ({ navigation }: RouterProps) => {
         try {
             await updateProfile(user, { displayName: username });
             await updateEmail(user, email);
+
+            const userRef = ref(FIREBASE_DB, `users/${user.uid}`);
+            await update(userRef, { address: address });
+
             alert("Profile updated successfully!");
         } catch (error) {
             console.error("Error updating profile:", error);
@@ -46,7 +52,9 @@ const Account = ({ navigation }: RouterProps) => {
                         style={styles.input}
                     />
                 ) : (
-                    <Text style={styles.text}>{username}</Text>
+                    <Text style={styles.text}>
+                    {username ? username : <Text style={styles.placeholder}>Not specified</Text>}
+                    </Text>
                 )}
             </View>
 
@@ -60,6 +68,21 @@ const Account = ({ navigation }: RouterProps) => {
                     />
                 ) : (
                     <Text style={styles.text}>{email}</Text>
+                )}
+            </View>
+
+            <View style={styles.row}>
+                <Text style={styles.label}>Address:</Text>
+                {isEditing ? (
+                    <TextInput
+                        value={address}
+                        onChangeText={setAddress}
+                        style={styles.input}
+                    />
+                ) : (
+                    <Text style={styles.text}>
+                    {address ? address : <Text style={styles.placeholder}>Not specified</Text>}
+                    </Text>
                 )}
             </View>
 
@@ -161,4 +184,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    placeholder: {
+        fontSize: 16,
+        color: '#aaa',
+        fontStyle: 'italic',
+    },
+    
 });

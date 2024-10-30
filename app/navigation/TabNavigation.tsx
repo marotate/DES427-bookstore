@@ -10,9 +10,18 @@ import BookList from '../screens/BookList'; // Import the BookListScreen
 import { Entypo } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import OrderSummary from '../screens/OrderSummary';
 
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator(); // Create a stack navigator
+
+const CartStack = () => (
+    <Stack.Navigator>
+        <Stack.Screen name="Cart" component={Cart} options={{ headerShown: false }} />
+        <Stack.Screen name="OrderSummary" component={OrderSummary} options={{ title: 'Order Summary' }} />
+    </Stack.Navigator>
+);
 
 const ACTIVE_COLOR = '#FFFFFF'; // Color for the active icon
 const INACTIVE_COLOR = '#0B0F4C'; // Color for inactive icons
@@ -75,6 +84,7 @@ const TabNavigation = () => {
             <Tab.Screen name="Cart" component={Cart} options={{ headerShown: false }} />
             <Tab.Screen name="Account" component={Account} options={{ headerShown: false }} />
         </Tab.Navigator>
+        
     );
 };
 

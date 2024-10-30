@@ -1,8 +1,8 @@
-// BookDetails.tsx
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import { Book } from '../../type';
 import { Ionicons } from "@expo/vector-icons";
+import { CartContext } from '../context/CartContext';
 
 const { width, height } = Dimensions.get("window");
 
@@ -11,7 +11,9 @@ interface BookDetailsProps {
   onGoBack: () => void;
 }
 
-const BookDetails: React.FC<BookDetailsProps> = ({ book, onGoBack }) => {
+  const BookDetails: React.FC<BookDetailsProps> = ({ book, onGoBack }) => {
+  const { addToCart } = useContext(CartContext);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
@@ -32,7 +34,10 @@ const BookDetails: React.FC<BookDetailsProps> = ({ book, onGoBack }) => {
           <Text style={styles.infoText}>ISBN: {book.ISBN}</Text>
           <Text style={styles.infoText}>Stock: {book.stock} Books</Text>
           <Text style={styles.price}>Pricing: {book.price} ฿</Text>
-          <TouchableOpacity style={styles.addToCartButton}>
+          <TouchableOpacity 
+            style={styles.addToCartButton} 
+            onPress={() => addToCart(book)} 
+          >
             <Text style={styles.addToCartText}>Add to Cart</Text>
           </TouchableOpacity>
         </View>
