@@ -8,28 +8,16 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { ref, onValue } from "firebase/database";
 import { FIREBASE_DB, FIREBASE_STORAGE } from "../../Firebaseconfig";
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import BooksList from "./BookList"; // Import the new BooksList component
 import BookDetails from "./BookDetails";
-
-
+import { Book } from "../../type";
 const { width, height } = Dimensions.get("window");
 
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  category: string;
-  publisher: string;
-  ISBN: string;
-  stock: number;
-  price: string;
-  description: string;
-  picture: string;
-}
 
 const Home = () => {
   const [topBooks, setTopBooks] = useState<Book[]>([]);
@@ -43,10 +31,15 @@ const Home = () => {
     "Home"
   ); // State to manage current screen
   const [selectedBook, setSelectedBook] = useState<Book | null>(null); // State to hold selected book
+  const [loginMessage, setLoginMessage] = useState<string | null>(
+    "Login Successful!"
+  );
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const booksRef = ref(FIREBASE_DB, "books");
     onValue(booksRef, async (snapshot) => {
+      setLoading(true);
       const data = snapshot.val();
       const booksArray = await Promise.all(
         Object.keys(data).map(async (key) => {
@@ -61,7 +54,15 @@ const Home = () => {
       setTopBooks(shuffledBooks.slice(0, 15));
       setLatestBooks(shuffledBooks.slice(15, 30));
       setUpcomingBooks(shuffledBooks.slice(30, 45));
+      setLoading(false);
     });
+
+    // Hide the login message after 3 seconds
+    const messageTimeout = setTimeout(() => {
+      setLoginMessage(null);
+    }, 2000);
+
+    return () => clearTimeout(messageTimeout);
   }, []);
 
   const handleSeeMore = (
@@ -103,10 +104,7 @@ const Home = () => {
       style={styles.bookItem}
       onPress={() => handleBookDetail(item)}
     >
-      <Image
-        source={{ uri: item.picture }}
-        style={styles.bookImage}
-      />
+      <Image source={{ uri: item.picture }} style={styles.bookImage} />
       <View style={styles.bookDetails}>
         <Text style={styles.bookCategory}>{item.category}</Text>
         <Text style={styles.bookTitle}>{item.title}</Text>
@@ -130,52 +128,65 @@ const Home = () => {
       style={styles.container}
       contentContainerStyle={styles.scrollContent}
     >
-      <View style={styles.header}>
-        <Text style={styles.title}>WELCOME TO BOOKSHELF STORE</Text>
-      </View>
+      {loading ? ( // Display loading indicator while data is loading
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0b0f4c" />
+        </View>
+      ) : (
+        <>
+          {loginMessage && (
+            <View style={styles.loginMessageContainer}>
+              <Text style={styles.loginMessageText}>{loginMessage}</Text>
+            </View>
+          )}
+          <View style={styles.header}>
+            <Text style={styles.title}>WELCOME TO BOOKSHELF STORE</Text>
+          </View>
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Top Books</Text>
-        <TouchableOpacity onPress={() => handleSeeMore("Top Books")}>
-          <Text style={styles.seeMore}>See More</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={topBooks.slice(0, 5)}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        horizontal
-        contentContainerStyle={styles.bookList}
-        windowSize={2}
-      />
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Top Books</Text>
+            <TouchableOpacity onPress={() => handleSeeMore("Top Books")}>
+              <Text style={styles.seeMore}>See More</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={topBooks.slice(0, 5)}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            contentContainerStyle={styles.bookList}
+            windowSize={2}
+          />
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Latest Books</Text>
-        <TouchableOpacity onPress={() => handleSeeMore("Latest Books")}>
-          <Text style={styles.seeMore}>Show More</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={latestBooks.slice(0, 5)}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        horizontal
-        contentContainerStyle={styles.bookList}
-      />
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Latest Books</Text>
+            <TouchableOpacity onPress={() => handleSeeMore("Latest Books")}>
+              <Text style={styles.seeMore}>Show More</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={latestBooks.slice(0, 5)}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            contentContainerStyle={styles.bookList}
+          />
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Upcoming Books</Text>
-        <TouchableOpacity onPress={() => handleSeeMore("Upcoming Books")}>
-          <Text style={styles.seeMore}>Show More</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={upcomingBooks.slice(0, 5)}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        horizontal
-        contentContainerStyle={styles.bookList}
-      />
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Upcoming Books</Text>
+            <TouchableOpacity onPress={() => handleSeeMore("Upcoming Books")}>
+              <Text style={styles.seeMore}>Show More</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={upcomingBooks.slice(0, 5)}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            contentContainerStyle={styles.bookList}
+          />
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -185,6 +196,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f2f2f2",
     padding: width * 0.05,
+  },
+  loadingContainer: { 
+    flex: 1,
+    justifyContent: "center", 
+    alignItems: "center",
+    height: height,
+  },
+  loginMessageContainer: {
+    backgroundColor: "#d0d4fa",
+    marginBottom: 10,
+    borderRadius: 10,
+    width: width * 0.9,
+    height: height * 0.08,
+    paddingTop: 20,
+  },
+  loginMessageText: {
+    color: "#0b04fc",
+    fontWeight: "bold",
+    textAlign: "center",
+    paddingTop: 10,
   },
   scrollContent: {
     paddingBottom: 20,

@@ -1,8 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth} from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -14,6 +15,7 @@ const firebaseConfig = {
   appId: "1:364913230065:web:21d2458954ad9a087ea950",
   databaseURL: "https://bookstore-2abd0-default-rtdb.firebaseio.com"
 };
+
 
 // Initialize Firebase
 export const FIREBASE_APP = initializeApp(firebaseConfig);
