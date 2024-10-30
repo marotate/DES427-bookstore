@@ -16,7 +16,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ totalPrice, onGoBack }) => 
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity style={styles.backButton}>
+                <TouchableOpacity style={styles.backButton} onPress={onGoBack}>
                     <Ionicons name="arrow-back" size={24} color="#0B0F4C" />
                 </TouchableOpacity>
                 <Text style={styles.header}>Order Summary</Text>

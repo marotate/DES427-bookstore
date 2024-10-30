@@ -13,11 +13,8 @@ import { ref, onValue } from "firebase/database";
 import { FIREBASE_DB, FIREBASE_STORAGE } from "../../Firebaseconfig";
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import BooksList from "./BookList"; // Import the new BooksList component
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../type";
 import BookDetails from "./BookDetails";
-import FastImage from "react-native-fast-image";
+
 
 const { width, height } = Dimensions.get("window");
 

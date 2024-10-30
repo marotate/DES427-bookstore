@@ -2,9 +2,10 @@ import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image } from 'react-native';
 import { CartContext } from '../context/CartContext';
 import OrderSummary from './OrderSummary';
+import { CartItem } from '../context/CartContext';
 
 const Cart = () => {
-    const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart, proceedToCheckout } = useContext(CartContext);
+    const {cartItems, increaseQuantity, decreaseQuantity, removeFromCart, proceedToCheckout } = useContext(CartContext)!;
     const [currentScreen, setCurrentScreen] = useState<"Cart" | "OrderSummary">("Cart");
 
     // Function to calculate the total price
@@ -17,7 +18,7 @@ const Cart = () => {
         setCurrentScreen("OrderSummary"); // Navigate to OrderSummary
     };
 
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item }: { item: CartItem }) => (
         <View style={styles.cartItem}>
             <TouchableOpacity
                 style={styles.removeButton}

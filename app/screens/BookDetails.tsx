@@ -12,7 +12,7 @@ interface BookDetailsProps {
 }
 
   const BookDetails: React.FC<BookDetailsProps> = ({ book, onGoBack }) => {
-  const { addToCart } = useContext(CartContext);
+  const { addToCart }  = useContext(CartContext)!;
 
   return (
     <ScrollView style={styles.container}>

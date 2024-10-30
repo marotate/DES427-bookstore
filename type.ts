@@ -1,10 +1,5 @@
-// types.ts
-export type RootStackParamList = {
-    Home: undefined;
-    BookDetails: { book: Book };
-  };
   
-  export interface Book {
+export interface Book {
     id: string;
     title: string;
     author: string;
