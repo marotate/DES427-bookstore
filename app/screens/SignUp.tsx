@@ -37,6 +37,11 @@ const Signup = () => {
         createAt: Date.now(),
       });
 
+      const cartRef = ref(FIREBASE_DB, 'carts/' + response.user.uid);
+      await set(cartRef, {
+        items: [], // Start with an empty cart
+      });
+
       Alert.alert('Success', 'Account created successfully');
       console.log('Navigating to home page');
       

@@ -13,7 +13,7 @@ LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']
 
 export type RootStackParamList = {
   Login: undefined;
-  Signup: { setIsSigningOut: React.Dispatch<React.SetStateAction<boolean>> };
+  Signup: undefined;
   Tabs: undefined;
 };
 
@@ -21,7 +21,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [isSigningOut, setIsSigningOut] = useState(false); // add
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
@@ -35,7 +34,7 @@ const App: React.FC = () => {
     <CartProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
-          {user && !isSigningOut ? (
+          {user ? (
             <Stack.Screen
               name="Tabs"
               component={TabNavigation}
@@ -52,7 +51,6 @@ const App: React.FC = () => {
                 name="Signup"
                 component={Signup}
                 options={{ headerShown: false }}
-                initialParams={{ setIsSigningOut }}
               />
             </>
           )}

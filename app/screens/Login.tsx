@@ -8,7 +8,7 @@ import { RootStackParamList } from '../../App';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
-const Login: React.FC = () => {
+const Login = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -66,7 +66,7 @@ const Login: React.FC = () => {
             <TouchableOpacity
               onPress={() => {
                 console.log('Navigating to Signup');
-                navigation.navigate('Signup', { setIsSigningOut: () => {} });
+                navigation.navigate('Signup');
               }}
               style={styles.signupButton}
             >
