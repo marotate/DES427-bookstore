@@ -12,6 +12,7 @@ export interface CartItem {
 
 interface CartContextType {
     cartItems: CartItem[];
+    setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
     addToCart: (book: Book) => void;
     increaseQuantity: (id: string) => void;
     decreaseQuantity: (id: string) => void;
@@ -120,7 +121,8 @@ const CartProvider: FC<CartProviderProps> = ({ children }) => {
             removeFromCart,
             proceedToCheckout,
             currentScreen,
-            setCurrentScreen 
+            setCurrentScreen,
+            setCartItems,
         }}>
             {children}
         </CartContext.Provider>

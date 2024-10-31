@@ -51,7 +51,7 @@ const Cart = () => {
     if (currentScreen === 'OrderSummary') {
         const totalPrice = calculateTotalPrice(); // Calculate total price again for Order Summary
         return (
-            <OrderSummary totalPrice={totalPrice} onGoBack={() => setCurrentScreen('Cart')} />
+            <OrderSummary totalPrice={totalPrice} onGoBack={() => setCurrentScreen('Cart')} onNavigateToCart={() => setCurrentScreen('Cart')}/>
         );
     }
 
