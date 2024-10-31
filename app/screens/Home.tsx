@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import BooksList from "./BookList"; // Import the new BooksList component
 import BookDetails from "./BookDetails";
 import { Book } from "../../type";
+import { useFocusEffect } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 
 
@@ -31,12 +32,10 @@ const Home = () => {
     "Home"
   ); // State to manage current screen
   const [selectedBook, setSelectedBook] = useState<Book | null>(null); // State to hold selected book
-  const [loginMessage, setLoginMessage] = useState<string | null>(
-    "Login Successful!"
-  );
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
+  const fetchBooks = useCallback(() => {
+    if (topBooks.length && latestBooks.length && upcomingBooks.length) return;
     const booksRef = ref(FIREBASE_DB, "books");
     onValue(booksRef, async (snapshot) => {
       setLoading(true);
@@ -56,14 +55,14 @@ const Home = () => {
       setUpcomingBooks(shuffledBooks.slice(30, 45));
       setLoading(false);
     });
-
-    // Hide the login message after 3 seconds
-    const messageTimeout = setTimeout(() => {
-      setLoginMessage(null);
-    }, 2000);
-
-    return () => clearTimeout(messageTimeout);
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchBooks();
+      setCurrentScreen("Home");
+    }, [fetchBooks])
+  );
 
   const handleSeeMore = (
     type: "Top Books" | "Latest Books" | "Upcoming Books"
@@ -134,11 +133,6 @@ const Home = () => {
         </View>
       ) : (
         <>
-          {loginMessage && (
-            <View style={styles.loginMessageContainer}>
-              <Text style={styles.loginMessageText}>{loginMessage}</Text>
-            </View>
-          )}
           <View style={styles.header}>
             <Text style={styles.title}>WELCOME TO BOOKSHELF STORE</Text>
           </View>
