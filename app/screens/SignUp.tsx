@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { FIREBASE_AUTH } from '../../Firebaseconfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../Firebaseconfig';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../App';
+import { ref, set } from 'firebase/database';
 
 type SignupScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Signup'>;
+
 
 const Signup = () => {
   const navigation = useNavigation<SignupScreenNavigationProp>();
@@ -14,6 +16,7 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [address, setAddress] = useState('');
 
   const handleSignUp = async () => {
     if (password !== confirmPassword) {
@@ -24,8 +27,21 @@ const Signup = () => {
     try {
       const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
       console.log('User created:', response.user);
+
+      const db = ref(FIREBASE_DB, 'users/' + response.user.uid);
+
+      await set(db, {
+        username: username,
+        email: email,
+        address: address,
+        createAt: Date.now(),
+      });
+
       Alert.alert('Success', 'Account created successfully');
-      navigation.navigate('Login'); // Navigate back to Login after signup
+      console.log('Navigating to home page');
+      
+      //navigation.navigate('Login');
+
     } catch (error: any) {
       Alert.alert('Sign Up Failed', error.message);
     }
@@ -72,14 +88,14 @@ const Signup = () => {
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
       <TouchableOpacity 
-              onPress={() => {
-                console.log('Navigating to Login');
-                navigation.navigate('Login');
-              }} 
-              style={styles.gobackButton}
-            >
-              <Text style={styles.gobackText}>Go Back</Text>
-            </TouchableOpacity>
+        onPress={() => {
+          console.log('Navigating to Login');
+          navigation.navigate('Login');
+        }} 
+        style={styles.gobackButton}
+      >
+        <Text style={styles.gobackText}>Login</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -93,10 +109,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   image: {
-    width: 150,    // Set width of the image
-    height: 150,   // Set height of the image
-    alignSelf: 'center', // Center the image horizontally
-    marginBottom: 20,    // Add space below the image
+    width: 150,
+    height: 150,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
   title: {
     fontSize: 18,

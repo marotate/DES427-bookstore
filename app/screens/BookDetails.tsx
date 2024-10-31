@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, ScrollView, Alert } from 'react-native';
 import { Book } from '../../type';
 import { Ionicons } from "@expo/vector-icons";
 import { CartContext } from '../context/CartContext';
@@ -14,6 +14,11 @@ interface BookDetailsProps {
   const BookDetails: React.FC<BookDetailsProps> = ({ book, onGoBack }) => {
   const { addToCart }  = useContext(CartContext)!;
 
+  const handleAddToCart = () => {
+    addToCart(book);
+    Alert.alert('Success!', 'The book has been added to your cart.', [{ text: 'OK' }]);
+  };
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
@@ -36,7 +41,7 @@ interface BookDetailsProps {
           <Text style={styles.price}>Pricing: {book.price} ฿</Text>
           <TouchableOpacity 
             style={styles.addToCartButton} 
-            onPress={() => addToCart(book)} 
+            onPress={handleAddToCart}
           >
             <Text style={styles.addToCartText}>Add to Cart</Text>
           </TouchableOpacity>

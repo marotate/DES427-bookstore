@@ -1,27 +1,15 @@
 // TabNavigation.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from '../screens/Home';
 import Account from '../screens/Account';
 import Cart from '../screens/Cart'; 
 import Categories from '../screens/Categories'; 
-import BookList from '../screens/BookList'; // Import the BookListScreen
-import { Entypo } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import OrderSummary from '../screens/OrderSummary';
 
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator(); // Create a stack navigator
-
-const CartStack = () => (
-    <Stack.Navigator>
-        <Stack.Screen name="Cart" component={Cart} options={{ headerShown: false }} />
-        <Stack.Screen name="OrderSummary" component={OrderSummary} options={{ title: 'Order Summary' }} />
-    </Stack.Navigator>
-);
 
 const ACTIVE_COLOR = '#FFFFFF'; // Color for the active icon
 const INACTIVE_COLOR = '#0B0F4C'; // Color for inactive icons

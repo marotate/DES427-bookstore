@@ -1,49 +1,30 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  ActivityIndicator,
-  TouchableOpacity,
-  Image,
-  KeyboardAvoidingView,
-  Modal,
-  Pressable,
-} from "react-native";
-import React, { useState } from "react";
-import { FIREBASE_AUTH } from "../../Firebaseconfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../App"; // Ensure this path is correct for your setup
+import React, { useState } from 'react';
+import { View, Text, TextInput, Alert, TouchableOpacity, StyleSheet, Image, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { FIREBASE_AUTH } from '../../Firebaseconfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../../App';
 
-type LoginScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "Login"
->;
+type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Login: React.FC = () => {
+  const navigation = useNavigation<LoginScreenNavigationProp>();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
 
   const auth = FIREBASE_AUTH;
-
-  const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const signIn = async () => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
-      setModalMessage("Login Successful");
-      setModalVisible(true);
+      Alert.alert('Login successful!', 'Welcome to Book Shelf Store. Enjoy Shopping!', [{ text: 'OK', onPress: () => navigation.navigate('Tabs') }]);
     } catch (error: any) {
       console.log(error);
-      setModalMessage("Login failed: " + error.message);
-      setModalVisible(true);
+      Alert.alert('Login failed!', 'Please Try Again.', [{ text: 'OK' }]);
     } finally {
       setLoading(false);
     }
@@ -58,7 +39,7 @@ const Login = () => {
           }}
           style={styles.image}
         />
-        <Text style={styles.title}>Please fill your details to signup</Text>
+        <Text style={styles.title}>Please fill your details to login</Text>
         <TextInput
           value={email}
           style={styles.input}
@@ -84,8 +65,8 @@ const Login = () => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                console.log("Navigating to Signup");
-                navigation.navigate("Signup");
+                console.log('Navigating to Signup');
+                navigation.navigate('Signup', { setIsSigningOut: () => {} });
               }}
               style={styles.signupButton}
             >
@@ -94,25 +75,6 @@ const Login = () => {
           </>
         )}
       </KeyboardAvoidingView>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>{modalMessage}</Text>
-            <Pressable
-              style={[styles.buttonAlert, styles.buttonClose]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.textStyle}>Close</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -163,44 +125,5 @@ const styles = StyleSheet.create({
   signupText: {
     color: "#007bff",
     fontSize: 16,
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Add a semi-transparent background
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    minWidth: 300,
-  },
-  buttonAlert: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonClose: {
-    backgroundColor: "#0b0f4c",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
   },
 });

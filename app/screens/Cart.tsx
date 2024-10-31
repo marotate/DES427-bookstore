@@ -36,15 +36,15 @@ const Cart = () => {
                 <Text style={styles.authorText}>{item.book.author}</Text>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.squareButton} onPress={() => decreaseQuantity(item.book.id)}>
-                        <Text style={styles.buttonText}>-</Text>
+                        <Text style={styles.buttonTextSmall}>-</Text>
                     </TouchableOpacity>
                     <Text style={styles.quantity}>{item.quantity}</Text>
                     <TouchableOpacity style={styles.squareButton} onPress={() => increaseQuantity(item.book.id)}>
-                        <Text style={styles.buttonText}>+</Text>
+                        <Text style={styles.buttonTextSmall}>+</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            <Text style={styles.price}>{(item.quantity * Number(item.book.price)).toFixed(2)} ฿</Text>
+            <Text style={styles.price}>{(item.quantity * Number(item.book.price))} ฿</Text>
         </View>
     );
 
@@ -69,7 +69,7 @@ const Cart = () => {
             )}
             {cartItems.length > 0 && (
                 <TouchableOpacity style={styles.checkoutButton} onPress={handleProceedToCheckout}>
-                    <Text style={styles.buttonText}>Proceed to Checkout</Text>
+                    <Text style={styles.buttonTextBig}>Proceed to Checkout</Text>
                 </TouchableOpacity>
             )}
         </View>
@@ -156,8 +156,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginHorizontal: 5,
         borderRadius: 5,
+        bottom: 10,
     },
-    buttonText: {
+    buttonTextSmall: {
+        color: "#0B0F4B",
+        fontWeight: "bold",
+        fontSize: 16,
+    },
+    buttonTextBig: {
         color: "#fff",
         fontWeight: "bold",
         fontSize: 16,
@@ -166,6 +172,7 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 20,
         paddingHorizontal: 10,
+        bottom: 10,
     },
     price: {
         color: "white",
