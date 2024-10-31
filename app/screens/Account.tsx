@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../Firebaseconfig";
-import { updateProfile, updateEmail, User } from "firebase/auth"; // Import update functions directly
-import { ref, update } from "firebase/database";
+import { updateProfile, updateEmail, User } from "firebase/auth";
+import { ref, onValue, update } from "firebase/database";
 
 interface RouterProps {
     navigation: NavigationProp<any, any>;
@@ -16,6 +16,20 @@ const Account = ({ navigation }: RouterProps) => {
     const [address, setAddress] = useState("");
     const [isEditing, setIsEditing] = useState(false);
 
+    useEffect(() => {
+        if (user) {
+            const userRef = ref(FIREBASE_DB, `users/${user.uid}`);
+            onValue(userRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    setUsername(data.username || "");
+                    setEmail(data.email || "");
+                    setAddress(data.address || "");
+                }
+            });
+        }
+    }, [user]);
+
     const handleSave = async () => {
         if (!user) return;
 
@@ -26,7 +40,7 @@ const Account = ({ navigation }: RouterProps) => {
             const userRef = ref(FIREBASE_DB, `users/${user.uid}`);
             await update(userRef, { address: address });
 
-            alert("Profile updated successfully!");
+            Alert.alert('Edit Successful', 'Please check your information', [{ text: 'OK'}]);
         } catch (error) {
             console.error("Error updating profile:", error);
             alert("Failed to update profile.");
@@ -53,7 +67,7 @@ const Account = ({ navigation }: RouterProps) => {
                     />
                 ) : (
                     <Text style={styles.text}>
-                    {username ? username : <Text style={styles.placeholder}>Not specified</Text>}
+                        {username ? username : <Text style={styles.placeholder}>Not specified</Text>}
                     </Text>
                 )}
             </View>
@@ -81,7 +95,7 @@ const Account = ({ navigation }: RouterProps) => {
                     />
                 ) : (
                     <Text style={styles.text}>
-                    {address ? address : <Text style={styles.placeholder}>Not specified</Text>}
+                        {address ? address : <Text style={styles.placeholder}>Not specified</Text>}
                     </Text>
                 )}
             </View>
@@ -111,41 +125,57 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         justifyContent: 'center',
+        backgroundColor: '#f2f2f2',
     },
     header: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 30,
+        marginBottom: 20,
+        color: '#0b0f4c',
+        letterSpacing: 1,
     },
     image: {
-        width: 150,
-        height: 150,
+        width: 120,
+        height: 120,
         alignSelf: 'center',
         marginBottom: 20,
+        borderRadius: 60,
+        borderWidth: 3,
+        borderColor: '#0b0f4c',
     },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 15,
+        backgroundColor: '#ffffff',
+        padding: 15,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 3,
     },
     label: {
         fontSize: 16,
-        fontWeight: 'bold',
-        width: 100,
+        fontWeight: '600',
+        width: 90,
+        color: '#005f8d',
     },
     input: {
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 10,
+       
+        borderRadius: 8,
+        paddingHorizontal: 12,
         flex: 1,
         height: 40,
-        backgroundColor: "#fff",
+        backgroundColor: "#f0f8ff",
+        color: '#005f8d',
     },
     text: {
         fontSize: 16,
         flex: 1,
+        color: '#005f8d',
     },
     buttonRow: {
         flexDirection: 'row',
@@ -153,41 +183,52 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     editButton: {
-        backgroundColor: '#121764',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
+        backgroundColor: '#0b0f4c',
+        paddingVertical: 12,
+        paddingHorizontal: 25,
+        borderRadius: 10,
         flex: 1,
         marginRight: 5,
         alignItems: 'center',
+        shadowColor: '#007acc',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
     },
     logoutButton: {
-        backgroundColor: '#d9534f', // Different color for logout button
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
+        backgroundColor: '#ff4d4f',
+        paddingVertical: 12,
+        paddingHorizontal: 25,
+        borderRadius: 10,
         flex: 1,
         marginLeft: 5,
         alignItems: 'center',
+        shadowColor: '#ff4d4f',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
     },
     saveButton: {
-        backgroundColor: '#28a745',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
+        backgroundColor: '#16207B',
+        paddingVertical: 12,
+        paddingHorizontal: 25,
+        borderRadius: 10,
         flex: 1,
         marginRight: 5,
         alignItems: 'center',
+        shadowColor: '#52c41a',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
     },
     buttonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '600',
     },
     placeholder: {
         fontSize: 16,
         color: '#aaa',
         fontStyle: 'italic',
     },
-    
 });
