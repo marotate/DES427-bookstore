@@ -32,21 +32,30 @@ const Account = ({ navigation }: RouterProps) => {
 
     const handleSave = async () => {
         if (!user) return;
-
+    
         try {
+            // Update the user's display name and email in Firebase Authentication
             await updateProfile(user, { displayName: username });
             await updateEmail(user, email);
-
+    
+            // Save username, email, and address to Firebase Realtime Database
             const userRef = ref(FIREBASE_DB, `users/${user.uid}`);
-            await update(userRef, { address: address });
-
-            Alert.alert('Edit Successful', 'Please check your information', [{ text: 'OK'}]);
+            await update(userRef, {
+                username: username,
+                email: email,
+                address: address,
+                createAt: Date.now(), // Optionally add a timestamp for the profile update
+            });
+    
+            Alert.alert('Edit Successful', 'Please check your information', [{ text: 'OK' }]);
         } catch (error) {
             console.error("Error updating profile:", error);
             alert("Failed to update profile.");
         }
+    
         setIsEditing(false);
     };
+    
 
     return (
         <View style={styles.container}>
