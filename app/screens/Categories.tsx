@@ -134,7 +134,10 @@ const Categories = () => {
           <Text style={styles.bookAuthor}>{item.author}</Text>
           <Text style={styles.bookPublisher}>{item.publisher}</Text>
         </View>
-        <Text style={styles.bookPrice}>{item.price} ฿</Text>
+        <View style = {styles.stockContain}> 
+          <Text style={styles.bookPrice}>{item.price} ฿</Text>
+        <Text style={styles.bookStock}>Stock: {item.stock} </Text></View>
+       
       </View>
     </TouchableOpacity>
   );
@@ -229,8 +232,7 @@ const styles = StyleSheet.create({
   },  
   bookDetailsCon: {
     flex: 1,
-    flexDirection: "row", // Updated to row layout
-    //justifyContent: "space-between", // Align details and price on either side
+    flexDirection: "row",
     alignItems: "center",
   },
   bookDetails: {
@@ -249,10 +251,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
   },
+  stockContain: {
+    
+    flexDirection: "column",
+  },
   bookPrice: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#333",
+  },
+  bookStock: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#252f90",
   },
   categoryList: {
     paddingBottom: 16,
