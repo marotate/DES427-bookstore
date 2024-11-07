@@ -10,13 +10,15 @@ import { ref, set } from 'firebase/database';
 type SignupScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Signup'>;
 
 
-const Signup = () => {
+const Signup = ({ setIsLogin }: { setIsLogin: (value: boolean) => void }) => {
   const navigation = useNavigation<SignupScreenNavigationProp>();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [address, setAddress] = useState('');
+  const [loading, setLoading] = useState(false);  // To handle loading state
+
 
   const handleSignUp = async () => {
     if (password !== confirmPassword) {
@@ -24,7 +26,10 @@ const Signup = () => {
       return;
     }
 
+    setLoading(true); // Set loading to true when starting the signup process
+
     try {
+      
       const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
       console.log('User created:', response.user);
 
@@ -43,12 +48,21 @@ const Signup = () => {
       });
 
       Alert.alert('Success', 'Account created successfully');
-      console.log('Navigating to home page');
-      
-      //navigation.navigate('Login');
+      console.log('Staying at the register page');
+
+      try {
+        // If sign-up is successful
+        setIsLogin(false);
+        navigation.navigate('Login'); // This will work if 'Login' is correctly defined in RootStackParamList
+      } catch (error: any) {
+        Alert.alert('Sign Up Failed', error.message);
+      }
 
     } catch (error: any) {
       Alert.alert('Sign Up Failed', error.message);
+    }
+    finally {
+      setLoading(false); // Set loading to false after the process completes
     }
   };
 
@@ -89,8 +103,8 @@ const Signup = () => {
         style={styles.input}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
+      <Text style={styles.buttonText}>{loading ? 'Creating Account...' : 'Register'}</Text>
       </TouchableOpacity>
       <TouchableOpacity 
         onPress={() => {

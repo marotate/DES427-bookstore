@@ -7,6 +7,7 @@ import Cart from '../screens/Cart';
 import Categories from '../screens/Categories'; 
 import { StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useFocusEffect } from '@react-navigation/native';  // Import the hook
 
 
 const Tab = createBottomTabNavigator();
@@ -67,12 +68,52 @@ const TabNavigation = () => {
                 },
             })}
         >
-            <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
-            <Tab.Screen name="Categories" component={Categories} options={{ headerShown: false }}  />
-            <Tab.Screen name="Cart" component={Cart} options={{ headerShown: false }} />
-            <Tab.Screen name="Account" component={Account} options={{ headerShown: false }} />
+                   <Tab.Screen 
+                name="Home" 
+                component={Home} 
+                options={{ headerShown: false }} 
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        // You can use navigation to trigger a refresh
+                        e.preventDefault();  // Prevent default navigation behavior
+                        navigation.navigate('Home');  // Trigger refresh manually
+                    }
+                })}
+            />
+            <Tab.Screen 
+                name="Categories" 
+                component={Categories} 
+                options={{ headerShown: false }}  
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        navigation.navigate('Categories');
+                    }
+                })}
+            />
+            <Tab.Screen 
+                name="Cart" 
+                component={Cart} 
+                options={{ headerShown: false }} 
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        navigation.navigate('Cart');
+                    }
+                })}
+            />
+            <Tab.Screen 
+                name="Account" 
+                component={Account} 
+                options={{ headerShown: false }} 
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        navigation.navigate('Account');
+                    }
+                })}
+            />
         </Tab.Navigator>
-        
     );
 };
 

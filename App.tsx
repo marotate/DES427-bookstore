@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from './Firebaseconfig';
 import Login from './app/screens/Login';
 import TabNavigation from './app/navigation/TabNavigation';
-import Signup from './app/screens/SignUp'; 
+import Signup from './app/screens/SignUp';
 import { LogBox } from 'react-native';
 import CartProvider from './app/context/CartContext';
 
@@ -21,12 +21,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLogin, setIsLogin] = useState<boolean>(false); // Track if the user logged in from Login page
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      console.log('user', user);
+      console.log('User status changed:', user);
       setUser(user);
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -34,7 +36,8 @@ const App: React.FC = () => {
     <CartProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
-          {user ? (
+          {user && isLogin ? (
+            // Only show Tabs if both user and isLogin are true
             <Stack.Screen
               name="Tabs"
               component={TabNavigation}
@@ -44,14 +47,16 @@ const App: React.FC = () => {
             <>
               <Stack.Screen
                 name="Login"
-                component={Login}
                 options={{ headerShown: false }}
-              />
+              >
+                {props => <Login {...props} setIsLogin={setIsLogin} />}
+              </Stack.Screen>
               <Stack.Screen
                 name="Signup"
-                component={Signup}
                 options={{ headerShown: false }}
-              />
+              >
+                {props => <Signup {...props} setIsLogin={setIsLogin} />}
+              </Stack.Screen>
             </>
           )}
         </Stack.Navigator>

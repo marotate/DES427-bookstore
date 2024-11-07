@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ImageBackground,
+  ActivityIndicator, // Import the ActivityIndicator for loading state
 } from "react-native";
 import { FIREBASE_DB, FIREBASE_STORAGE } from "../../Firebaseconfig";
 import { ref, onValue } from "firebase/database";
@@ -16,6 +17,7 @@ import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import { Entypo } from "@expo/vector-icons";
 import BookDetails from "./BookDetails";
 import { LinearGradient } from "expo-linear-gradient";
+import { useFocusEffect } from "@react-navigation/native"; // Import the hook
 
 const { width, height } = Dimensions.get("window");
 
@@ -53,9 +55,11 @@ const Categories = () => {
     "Home"
   ); // State to manage current screen
   const [selectedBook, setSelectedBook] = useState<Book | null>(null); // State to hold selected book
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state to track data fetch
 
-  useEffect(() => {
+  const fetchBooks = async () => {
+    setLoading(true); // Set loading to true when fetching data
     const booksRef = ref(FIREBASE_DB, "books");
     onValue(booksRef, async (snapshot) => {
       const data = snapshot.val();
@@ -68,9 +72,21 @@ const Categories = () => {
         })
       );
       setBooks(booksArray);
-      setFilteredBooks(booksArray); // Initially show all books
+      setFilteredBooks(booksArray);
+      setLoading(false); // Set loading to false once data is fetched
     });
+  };
+
+  useEffect(() => {
+    fetchBooks();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchBooks(); // Refetch books when the screen comes back into focus
+      console.log('Tab focused, reload data!');
+    }, [])
+  );
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -134,10 +150,10 @@ const Categories = () => {
           <Text style={styles.bookAuthor}>{item.author}</Text>
           <Text style={styles.bookPublisher}>{item.publisher}</Text>
         </View>
-        <View style = {styles.stockContain}> 
+        <View style={styles.stockContain}>
           <Text style={styles.bookPrice}>{item.price} ฿</Text>
-        <Text style={styles.bookStock}>Stock: {item.stock} </Text></View>
-       
+          <Text style={styles.bookStock}>Stock: {item.stock} </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -146,7 +162,10 @@ const Categories = () => {
     return (
       <BookDetails
         book={selectedBook}
-        onGoBack={() => setCurrentScreen("Home")}
+        onGoBack={() => {
+          setCurrentScreen("Home");
+          fetchBooks(); // Refetch books when going back to home
+        }}
       />
     );
   }
@@ -167,7 +186,9 @@ const Categories = () => {
           onChangeText={handleSearch}
         />
       </View>
-      {searchQuery ? (
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" style={styles.loading} />
+      ) : searchQuery ? (
         <FlatList
           data={filteredBooks}
           renderItem={renderItem}
@@ -299,6 +320,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  loading: {
+    marginTop: 50,
   },
 });
 

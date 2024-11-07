@@ -8,8 +8,13 @@ import { RootStackParamList } from '../../App';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
-const Login = () => {
+interface LoginProps {
+  onLoginSuccess: () => void;
+}
+
+const Login = ({ setIsLogin }: { setIsLogin: (value: boolean) => void }) => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
+  const navigation1 = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,6 +26,7 @@ const Login = () => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
+      setIsLogin(true);
       Alert.alert('Login successful!', 'Welcome to Book Shelf Store. Enjoy Shopping!', [{ text: 'OK', onPress: () => navigation.navigate('Tabs') }]);
     } catch (error: any) {
       console.log(error);
@@ -127,3 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+function setFromLogin(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}
+

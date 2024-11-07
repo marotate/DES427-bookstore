@@ -90,11 +90,13 @@ const CartProvider: FC<CartProviderProps> = ({ children }) => {
                 updatedCartItems = prevItems.map(item =>
                     item.book.id === id ? { ...item, quantity: item.quantity - 1 } : item
                 );
+                
             } else {
                 updatedCartItems = prevItems.filter(item => item.book.id !== id);
             }
             saveCartToFirebase(updatedCartItems);
             return updatedCartItems;
+            
         });
     };
 

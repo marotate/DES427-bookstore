@@ -27,6 +27,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ totalPrice, onGoBack, onNav
             cartItems.forEach((item: { book: { id: any; stock: number; }; quantity: number; }) => {
                 const bookRef = ref(FIREBASE_DB, `books/${item.book.id}`);
                 updates[`books/${item.book.id}/stock`] = item.book.stock - item.quantity;
+                console.log('Deleting stock item with ID:', item.book.id);
             });
             await update(ref(FIREBASE_DB), updates);
 
